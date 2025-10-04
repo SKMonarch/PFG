@@ -1,10 +1,11 @@
 import os
-from slalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
 DB_USER = os.getenv("POSTGRES_USER", "user")
-DB_PASS = os.getenv("POSTGRES_PASS", "pass")
-DB_NAME = os.getenv("POSTGRES_NAME", "banco")
+DB_PASS = os.getenv("POSTGRES_PASSWORD", "pass")
+DB_NAME = os.getenv("POSTGRES_DB", "banco")
 DB_HOST = os.getenv("POSTGRES_HOST", "bd")
 DB_PORT = os.getenv("POSTGRES_PORT", "5432")
 
