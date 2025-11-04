@@ -1,9 +1,8 @@
 import { useContext } from "react";
-import { ThemeContext } from "../context/ThemeContext";
+
 
 export default function Home() {
-  const { theme } = useContext(ThemeContext);
-
+ 
   return (
     <div>
       <section className="">

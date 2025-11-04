@@ -1,47 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  /* Colores principales */
-  --bg: #ffffff;           /* Background */
-  --text: #111111;        /* Texto principial*/
-  --surface: #f5f5f5;     /* Tarjetas / secciones*/
-  --primary: #4d4647;     /* Texto senalado*/                       
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+  }
 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+  }
 
-  /* Sombras y bordes */
-  --color-border: #E0E0E0;        
-  --color-shadow: rgba(0, 0, 0, 0.05); 
-
-  /* Transiciones */
-  --transition: all 0.3s ease;    
-
-  /* Tipografía */
-  --font-base: 'Inter', sans-serif;
-  --font-heading: 'Poppins', sans-serif;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--bg);
-  color: var(--text);
-  font-family: var(--font-base);
-  transition: var(--transition);
-}
-
-
-#root {
-  min-height: 100vh;
-  background-color: var(--bg);
-  color: var(--text);
-  transition: var(--transition);
-}
-
-.card {
-  background-color: var(--surface);
-  color: var(--text);
-  box-shadow: 0 2px 4px var(--color-shadow);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 1rem;
-  transition: var(--transition);
+  body {
+    @apply bg-background text-foreground;
+  }
 }

@@ -1,14 +1,12 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { ThemeContext } from "../context/ThemeContext.jsx";
+
 import LoginModal from "./LoginModal";
-import ThemeToggle from "./ThemeToggle";
 import { Link } from "react-router-dom";
 
 
 export default function Navbar() {
   const { user, logout } = useContext(AuthContext);
-  const { theme } = useContext(ThemeContext); 
   const [showLogin, setShowLogin] = useState(false);
 
   return (
@@ -25,9 +23,6 @@ export default function Navbar() {
         )}
       </div>
 
-      <div className="nav-actions">
-        <ThemeToggle />
-      </div>
 
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
     </nav>
