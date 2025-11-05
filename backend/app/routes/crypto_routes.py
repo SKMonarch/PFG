@@ -12,12 +12,7 @@ router = APIRouter()
 @router.get("/prices")
 def get_prices(db: Session = Depends(get_db)):
     cryptos = db.query(Crypto).all()
-    result = []
-    for c in cryptos:
-        price = get_crypto_price(c.symbol)
-        c.price_usd = price
-        db.commit()
-        result.append({"symbol": c.symbol, "price_usd": price})
+    result = [{"symbol": c.symbol, "price_usd": get_crypto_price(c.symbol)} for c in cryptos]
     return result
 
 @router.post("/buy")
@@ -40,11 +35,12 @@ def sell_crypto(symbol: str, amount: float, db: Session = Depends(get_db), user=
     crypto = get_crypto_by_symbol(db, symbol)
     if not crypto:
         raise HTTPException(404, "Criptomoneda no encontrada")
-    user_crypto = db.query(Crypto).filter_by(id=crypto.id).first()
+
+    user_crypto = db.query(UserCrypto).filter_by(user_id=user.id, crypto_id=crypto.id).first()
     if not user_crypto or user_crypto.amount < amount:
         raise HTTPException(400, "No tienes suficientes criptos")
-    total = crypto.price_usd * amount
 
+    total = crypto.price_usd * amount
     user_crypto.amount -= amount
     user.balance += total
     create_transaction(db, None, user.id, total, "venta_crypto", f"Venta de {amount} {symbol}")
