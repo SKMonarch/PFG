@@ -6,6 +6,7 @@ from app.crud.crypto_crud import get_crypto_by_symbol, update_or_create_user_cry
 from app.crud.transaction_crud import create_transaction
 from app.models.crypto import Crypto
 from app.services.crypto_service import get_crypto_price
+import requests
 
 router = APIRouter()
 
@@ -46,3 +47,32 @@ def sell_crypto(symbol: str, amount: float, db: Session = Depends(get_db), user=
     create_transaction(db, None, user.id, total, "venta_crypto", f"Venta de {amount} {symbol}")
     db.commit()
     return {"message": "Venta realizada", "balance": user.balance}
+
+
+@router.post("/update-prices")
+def update_crypto_prices(db: Session = Depends(get_db)):
+  
+    
+    symbols = ["bitcoin", "ethereum", "cardano", "dogecoin", "solana"]
+
+    url = "https://api.coingecko.com/api/v3/simple/price"
+    params = {"ids": ",".join(symbols), "vs_currencies": "usd"}
+    response = requests.get(url, params=params)
+
+    if response.status_code != 200:
+        raise HTTPException(status_code=500, detail="Error al obtener datos de CoinGecko")
+
+    data = response.json()
+
+    for symbol in symbols:
+        if symbol in data:
+            price = data[symbol]["usd"]
+            crypto = db.query(Crypto).filter_by(symbol=symbol).first()
+            if crypto:
+                crypto.price_usd = price
+            else:
+                crypto = Crypto(name=symbol.capitalize(), symbol=symbol, price_usd=price)
+                db.add(crypto)
+
+    db.commit()
+    return {"message": "Precios actualizados correctamente"}

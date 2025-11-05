@@ -19,5 +19,5 @@ app.add_middleware(
 
 app.include_router(user_routes.router, prefix="/users", tags=["Users"])
 app.include_router(auth_routes.router, prefix="/auth", tags=["Auth"])
-app.include_router(crypto_routes.router, prefix="/prices", tags=["Crypto"])
+app.include_router(crypto_routes.router, prefix="/crypto", tags=["Crypto"])
 app.include_router(transaction_routes.router, prefix="/transactions", tags=["Transactions"])
