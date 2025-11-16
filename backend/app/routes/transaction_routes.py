@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.database.session import get_db
 from app.core.security import get_current_user
 from app.crud.transaction_crud import get_user_transactions, create_transaction
+from app.models.users import User
 
 
 router = APIRouter()
