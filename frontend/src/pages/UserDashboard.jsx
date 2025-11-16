@@ -41,15 +41,15 @@ export default function UserDashboard() {
 
       <div className="p-8 max-w-6xl mx-auto space-y-8">
 
-        {/* Saludo principal */}
+        
         <h1 className="text-3xl font-bold">
           Bienvenido, <span className="text-primary">{profile.username}</span>
         </h1>
 
-        {/* Grid principal */}
+       
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-          {/* Tarjeta de saldo */}
+          
           <Card className="col-span-1 md:col-span-1">
             <CardHeader>
               <CardTitle>Tu saldo</CardTitle>
@@ -61,7 +61,7 @@ export default function UserDashboard() {
             </CardContent>
           </Card>
 
-          {/* Acciones rápidas */}
+         
           <Card className="col-span-1 md:col-span-2">
             <CardHeader>
               <CardTitle>Acciones rápidas</CardTitle>
@@ -80,7 +80,7 @@ export default function UserDashboard() {
           </Card>
         </div>
 
-        {/* Últimas transacciones */}
+       
         <Card>
           <CardHeader>
             <CardTitle>Últimas transacciones</CardTitle>
@@ -107,7 +107,7 @@ export default function UserDashboard() {
           </CardContent>
         </Card>
 
-        {/* Sugerencias de envío */}
+        
         <Card>
           <CardHeader>
             <CardTitle>Usuarios frecuentes</CardTitle>

@@ -78,6 +78,7 @@ def update_crypto_prices(db: Session = Depends(get_db)):
     return {"message": "Precios actualizados correctamente"}
 
     @router.get("/history")
+    
 def crypto_history(symbol: str):
     url = f"https://api.coingecko.com/api/v3/coins/{symbol}/market_chart"
     params = {"vs_currency": "usd", "days": 7}
