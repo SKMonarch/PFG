@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.database.session import get_db
 from app.core.security import get_current_user
-from app.crud.transaction_crud import get_user_transactions
+from app.crud.transaction_crud import get_user_transactions, create_transaction
+
 
 router = APIRouter()
 
@@ -24,6 +25,8 @@ def transfer(receiver_username: str, amount: float, db: Session = Depends(get_db
 
     user.balance -= amount
     receiver.balance += amount
+
+
     create_transaction(db, user.id, receiver.id, amount, "transfer", f"Transferencia a {receiver_username}")
     db.commit()
     return {"message": "Transferencia completada", "balance": user.balance}

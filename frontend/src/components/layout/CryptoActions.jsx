@@ -1,25 +1,36 @@
-import { useState } from "react";
-import API from "../components/api/api";
+import { useEffect, useState } from "react";
+import API from "../api/api";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardFooter,
-} from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Button } from "../components/ui/button";
+} from "../ui/card";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "../ui/select";
 
 export default function CryptoActions() {
   const [symbol, setSymbol] = useState("");
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
+  const [cryptos, setCryptos] = useState([]);
+
+  
+  useEffect(() => {
+    API.get("/crypto/prices")
+      .then((res) => {
+        setCryptos(res.data);
+      })
+      .catch(() => alert("Error cargando criptomonedas"));
+  }, []);
 
   const handleAction = async (type) => {
     if (!symbol || !amount) {
-      alert("Por favor ingresa símbolo y cantidad");
+      alert("Por favor selecciona un símbolo y cantidad");
       return;
     }
 
@@ -46,20 +57,26 @@ export default function CryptoActions() {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="symbol">Símbolo</Label>
-            <Input
-              id="symbol"
-              placeholder="Ej: btc, eth..."
-              value={symbol}
-              onChange={(e) => setSymbol(e.target.value)}
-            />
+         
+          <div>
+            <Label>Símbolo</Label>
+            <Select value={symbol} onValueChange={setSymbol}>
+              <SelectTrigger className="w-full p-2 border rounded-lg">
+                <SelectValue placeholder="Selecciona una criptomoneda" />
+              </SelectTrigger>
+              <SelectContent>
+                {cryptos.map((c) => (
+                  <SelectItem key={c.symbol} value={c.symbol}>
+                    {c.name} ({c.symbol.toUpperCase()})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="amount">Cantidad</Label>
+          <div>
+            <Label>Cantidad</Label>
             <Input
-              id="amount"
               type="number"
               placeholder="Ej: 0.5"
               value={amount}
@@ -69,12 +86,8 @@ export default function CryptoActions() {
         </CardContent>
 
         <CardFooter className="flex justify-between">
-          <Button
-            variant="default"
-            onClick={() => handleAction("buy")}
-            disabled={loading}
-          >
-            {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+          <Button onClick={() => handleAction("buy")} disabled={loading}>
+            {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
             Comprar
           </Button>
 
@@ -83,7 +96,7 @@ export default function CryptoActions() {
             onClick={() => handleAction("sell")}
             disabled={loading}
           >
-            {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+            {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
             Vender
           </Button>
         </CardFooter>

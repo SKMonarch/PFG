@@ -1,21 +1,32 @@
-import { useState } from "react";
-import API from "../components/api/api";
+import { useEffect, useState } from "react";
+import API from "../api/api";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardFooter,
-} from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Button } from "../components/ui/button";
+} from "../ui/card";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "../ui/select";
 
 export default function TransferForm() {
   const [receiver, setReceiver] = useState("");
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState([]);
+
+  
+  useEffect(() => {
+    API.get("/users/all")
+      .then((res) => {
+        setUsers(res.data);
+      })
+      .catch(() => alert("Error cargando usuarios"));
+  }, []);
 
   const transfer = async () => {
     if (!receiver || !amount) {
@@ -48,37 +59,38 @@ export default function TransferForm() {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="receiver">Usuario receptor</Label>
-            <Input
-              id="receiver"
-              placeholder="Ej: juan_perez"
-              value={receiver}
-              onChange={(e) => setReceiver(e.target.value)}
-            />
+          
+          <div>
+            <Label>Usuario receptor</Label>
+            <Select value={receiver} onValueChange={setReceiver}>
+              <SelectTrigger className="w-full p-2 border rounded-lg">
+                <SelectValue placeholder="Selecciona un usuario" />
+              </SelectTrigger>
+              <SelectContent>
+                {users.map((u) => (
+                  <SelectItem key={u.username} value={u.username}>
+                    {u.username}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="amount">Monto</Label>
+         
+          <div>
+            <Label>Monto</Label>
             <Input
-              id="amount"
               type="number"
-              placeholder="Ej: 100"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
+              placeholder="Ej: 150"
             />
           </div>
         </CardContent>
 
-        <CardFooter className="flex justify-center">
-          <Button
-            onClick={transfer}
-            disabled={loading}
-            className="w-full sm:w-auto"
-          >
-            {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin mr-2" />
-            ) : null}
+        <CardFooter>
+          <Button onClick={transfer} disabled={loading}>
+            {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
             Enviar
           </Button>
         </CardFooter>
