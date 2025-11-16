@@ -21,32 +21,10 @@ export default function Navbar() {
           Abanck<span className="text-muted-foreground">OS</span>
         </Link>
 
-        <div className="flex items-center gap-6">
-          <Link
-            to="/home"
-            className="text-sm font-medium hover:text-primary transition-colors"
-          >
-            Inicio
+          <Link to="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">
+            Panel
           </Link>
-          <Link
-            to="/home#crypto"
-            className="text-sm font-medium hover:text-primary transition-colors"
-          >
-            Criptomonedas
-          </Link>
-          <Link
-            to="/home#transfer"
-            className="text-sm font-medium hover:text-primary transition-colors"
-          >
-            Transferencias
-          </Link>
-          <Link
-            to="/home#history"
-            className="text-sm font-medium hover:text-primary transition-colors"
-          >
-            Historial
-          </Link>
-        </div>
+
 
         {user && (
           <div className="flex items-center gap-4">

@@ -29,7 +29,7 @@ export default function LoginCard() {
     setLoading(true);
     try {
       await login(form.username, form.password);
-      navigate("/home");
+      navigate("/dashboard");
     } catch {
       alert("Error al iniciar sesión");
     } finally {

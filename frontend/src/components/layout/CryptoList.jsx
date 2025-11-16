@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import API from "../api/api";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import { Link } from "react-router-dom";
 
 export default function CryptoList() {
   const [cryptos, setCryptos] = useState([]);
@@ -20,11 +21,13 @@ export default function CryptoList() {
         <ul className="space-y-3">
           {cryptos.map((c) => (
             <li
-              key={c.id}
+              key={c.symbol}
               className="flex items-center justify-between border p-2 rounded"
             >
-              <span className="font-semibold">{c.name}</span>
-              <span className="text-sm opacity-70">{c.symbol}</span>
+              <Link to={`/crypto/${c.symbol}`} className="font-semibold text-primary hover:underline">
+                {c.symbol.toUpperCase()}
+              </Link>
+
               <span>${c.price_usd.toFixed(2)}</span>
             </li>
           ))}
