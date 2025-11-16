@@ -76,3 +76,18 @@ def update_crypto_prices(db: Session = Depends(get_db)):
 
     db.commit()
     return {"message": "Precios actualizados correctamente"}
+
+    @router.get("/history")
+def crypto_history(symbol: str):
+    url = f"https://api.coingecko.com/api/v3/coins/{symbol}/market_chart"
+    params = {"vs_currency": "usd", "days": 7}
+    res = requests.get(url, params=params)
+
+    if res.status_code != 200:
+        raise HTTPException(500, "No se pudo obtener el histórico")
+
+    data = res.json()["prices"]  
+
+    # convertimos a [{date, price}]
+    points = [{"date": p[0], "price": p[1]} for p in data]
+    return points

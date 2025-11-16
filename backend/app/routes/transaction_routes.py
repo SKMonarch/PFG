@@ -9,8 +9,24 @@ router = APIRouter()
 
 @router.get("/history")
 def transaction_history(db: Session = Depends(get_db), user=Depends(get_current_user)):
-    transactions = get_user_transactions(db, user.id)
-    return transactions
+    txs = get_user_transactions(db, user.id)
+    
+    
+    result = []
+    for tx in txs:
+        sender = db.query(User).filter(User.id == tx.sender_id).first()
+        receiver = db.query(User).filter(User.id == tx.receiver_id).first()
+
+        result.append({
+            "id": tx.id,
+            "amount": tx.amount,
+            "type": tx.type,
+            "description": tx.description,
+            "timestamp": tx.timestamp,
+            "sender": sender.username if sender else "Sistema",
+            "receiver": receiver.username if receiver else "Sistema"
+        })
+    return result
 
 
 @router.post("/transfer")

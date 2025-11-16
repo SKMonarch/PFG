@@ -58,6 +58,10 @@ export default function Navbar() {
                 </AvatarFallback>
               </Avatar>
               <span className="text-sm font-medium">{user.username}</span>
+              <span className="text-sm font-semibold text-primary">
+                ${user.balance.toFixed(2)}
+              </span>
+
             </div>
             <Button
               variant="outline"

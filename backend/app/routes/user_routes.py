@@ -19,4 +19,14 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
 @router.get("/me")
 def get_profile(current_user=Depends(get_current_user)):
-    return {"username": current_user.username, "email": current_user.email}
+    return {
+        "username": current_user.username,
+        "email": current_user.email,
+        "balance": current_user.balance
+    }
+
+@router.get("/all")
+def list_users(db: Session = Depends(get_db)):
+    from app.models.users import User
+    users = db.query(User).all()
+    return [{"id": u.id, "username": u.username, "email": u.email} for u in users]

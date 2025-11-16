@@ -19,7 +19,6 @@ export default function CryptoActions() {
   const [loading, setLoading] = useState(false);
   const [cryptos, setCryptos] = useState([]);
 
-  
   useEffect(() => {
     API.get("/crypto/prices")
       .then((res) => {
@@ -27,6 +26,10 @@ export default function CryptoActions() {
       })
       .catch(() => alert("Error cargando criptomonedas"));
   }, []);
+
+  const selectedCrypto = cryptos.find((c) => c.symbol === symbol);
+  const price = selectedCrypto?.price_usd || 0;
+  const total = amount ? price * parseFloat(amount) : 0;
 
   const handleAction = async (type) => {
     if (!symbol || !amount) {
@@ -57,7 +60,7 @@ export default function CryptoActions() {
         </CardHeader>
 
         <CardContent className="space-y-4">
-         
+
           <div>
             <Label>Símbolo</Label>
             <Select value={symbol} onValueChange={setSymbol}>
@@ -72,6 +75,13 @@ export default function CryptoActions() {
                 ))}
               </SelectContent>
             </Select>
+
+            
+            {selectedCrypto && (
+              <p className="text-sm mt-1 opacity-70">
+                Precio actual: <strong>${price.toFixed(2)}</strong>
+              </p>
+            )}
           </div>
 
           <div>
@@ -82,6 +92,13 @@ export default function CryptoActions() {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
+
+          
+            {amount && selectedCrypto && (
+              <p className="text-sm font-semibold mt-1">
+                Total: <strong>${total.toFixed(2)}</strong>
+              </p>
+            )}
           </div>
         </CardContent>
 

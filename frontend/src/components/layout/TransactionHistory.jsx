@@ -46,14 +46,19 @@ export default function TransactionHistory() {
           ) : (
             <ul className="space-y-3">
               {txs.map((tx) => (
-                <li
-                  key={tx.id}
-                  className="p-3 border rounded-lg flex justify-between items-center"
-                >
-                  <Badge>{tx.type}</Badge>
+              <li key={tx.id} className="p-3 border rounded-lg">
+                <div className="flex justify-between">
+                  <span className="font-semibold">
+                    {tx.sender} → {tx.receiver}
+                  </span>
+                  <Badge variant={tx.type === "transfer" ? "secondary" : tx.type.includes("compra") ? "default" : "destructive"}>
+                    {tx.type}
+                  </Badge>
                   <span>${tx.amount.toFixed(2)}</span>
-                  <span>{formatDate(tx.timestamp)}</span>
-                </li>
+                </div>
+                <p className="text-xs opacity-60">{formatDate(tx.timestamp)}</p>
+              </li>
+
               ))}
             </ul>
           )}
