@@ -25,12 +25,36 @@ export default function TransactionHistory() {
       timeStyle: "short",
     });
 
+  const getLabel = (tx) => {
+    if (tx.type === "transfer" && tx.is_received)
+      return "Transferencia recibida";
+
+    if (tx.type === "transfer" && !tx.is_received)
+      return "Transferencia enviada";
+
+    if (tx.type === "buy")
+      return "Compra de criptomoneda";
+
+    if (tx.type === "sell")
+      return "Venta de criptomoneda";
+
+    return tx.type;
+  };
+
+  const getBadgeStyle = (tx) => {
+    if (tx.type === "transfer" && tx.is_received) return "success";
+    if (tx.type === "transfer" && !tx.is_received) return "warning";
+    if (tx.type === "buy") return "default";
+    if (tx.type === "sell") return "destructive";
+    return "secondary";
+  };
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
-            Historial de Transacciones
+            Historial de Actividad
           </CardTitle>
         </CardHeader>
 
@@ -41,24 +65,61 @@ export default function TransactionHistory() {
             </div>
           ) : txs.length === 0 ? (
             <p className="text-center text-muted-foreground py-6">
-              No hay transacciones aún.
+              No tienes movimientos recientes.
             </p>
           ) : (
-            <ul className="space-y-3">
+            <ul className="space-y-4">
               {txs.map((tx) => (
-              <li key={tx.id} className="p-3 border rounded-lg">
-                <div className="flex justify-between">
-                  <span className="font-semibold">
-                    {tx.sender} → {tx.receiver}
-                  </span>
-                  <Badge variant={tx.type === "transfer" ? "secondary" : tx.type.includes("compra") ? "default" : "destructive"}>
-                    {tx.type}
-                  </Badge>
-                  <span>${tx.amount.toFixed(2)}</span>
-                </div>
-                <p className="text-xs opacity-60">{formatDate(tx.timestamp)}</p>
-              </li>
+                <li
+                  key={tx.id}
+                  className="p-4 border rounded-lg flex flex-col gap-2 hover:bg-muted/30 transition-colors"
+                >
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2 font-semibold">
+                      {tx.type === "buy" && <span>💹</span>}
+                      {tx.type === "sell" && <span>📉</span>}
+                      {tx.type === "transfer" &&
+                        (tx.is_received ? "➕" : "➖")}
 
+                      {getLabel(tx)}
+                    </div>
+
+                    <Badge variant={getBadgeStyle(tx)}>
+                      {getLabel(tx)}
+                    </Badge>
+                  </div>
+
+                  {/* Detalles */}
+                  <div className="text-sm opacity-80">
+                    {tx.type === "transfer" && (
+                      <>
+                        {tx.is_received ? (
+                          <p>
+                            Recibiste <strong>${tx.amount.toFixed(2)}</strong>{" "}
+                            de <strong>{tx.sender}</strong>
+                          </p>
+                        ) : (
+                          <p>
+                            Enviaste <strong>${tx.amount.toFixed(2)}</strong> a{" "}
+                            <strong>{tx.receiver}</strong>
+                          </p>
+                        )}
+                      </>
+                    )}
+
+                    {(tx.type === "buy" || tx.type === "sell") && (
+                      <p>
+                        {tx.type === "buy" ? "Compraste" : "Vendiste"}{" "}
+                        <strong>
+                          {tx.crypto_amount} {tx.crypto_symbol?.toUpperCase()}
+                        </strong>{" "}
+                        por <strong>${tx.amount.toFixed(2)}</strong>
+                      </p>
+                    )}
+                  </div>
+
+                  <p className="text-xs opacity-60">{formatDate(tx.timestamp)}</p>
+                </li>
               ))}
             </ul>
           )}

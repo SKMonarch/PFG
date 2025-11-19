@@ -13,11 +13,15 @@ import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "../ui/select";
 
-export default function CryptoActions() {
+export default function CryptoActions({ presetCrypto = "" }) {
   const [symbol, setSymbol] = useState("");
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [cryptos, setCryptos] = useState([]);
+
+  useEffect(() => {
+  if (presetCrypto) setSymbol(presetCrypto);
+  }, [presetCrypto]);
 
   useEffect(() => {
     API.get("/crypto/prices")

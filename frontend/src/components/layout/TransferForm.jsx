@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import API from "../api/api";
 import {
   Card,
-  CardHeader,
-  CardTitle,
   CardContent,
   CardFooter,
 } from "../ui/card";
@@ -13,18 +11,21 @@ import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "../ui/select";
 
-export default function TransferForm() {
-  const [receiver, setReceiver] = useState("");
+export default function TransferForm({ presetUser = "", onSuccess }) {
+  const [receiver, setReceiver] = useState(presetUser);
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
 
   
   useEffect(() => {
+    setReceiver(presetUser || "");
+  }, [presetUser]);
+
+  
+  useEffect(() => {
     API.get("/users/all")
-      .then((res) => {
-        setUsers(res.data);
-      })
+      .then((res) => setUsers(res.data))
       .catch(() => alert("Error cargando usuarios"));
   }, []);
 
@@ -39,7 +40,12 @@ export default function TransferForm() {
       await API.post(
         `/transactions/transfer?receiver_username=${receiver}&amount=${amount}`
       );
+
       alert("Transferencia realizada con éxito");
+
+      
+      if (onSuccess) onSuccess();
+
       setReceiver("");
       setAmount("");
     } catch (err) {
@@ -50,20 +56,15 @@ export default function TransferForm() {
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">
-            Enviar Dinero
-          </CardTitle>
-        </CardHeader>
-
+    <div className="p-2">
+      <Card className="shadow-none border-none">
         <CardContent className="space-y-4">
-          
+
           <div>
             <Label>Usuario receptor</Label>
+
             <Select value={receiver} onValueChange={setReceiver}>
-              <SelectTrigger className="w-full p-2 border rounded-lg">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecciona un usuario" />
               </SelectTrigger>
               <SelectContent>
@@ -76,7 +77,6 @@ export default function TransferForm() {
             </Select>
           </div>
 
-         
           <div>
             <Label>Monto</Label>
             <Input
@@ -89,7 +89,7 @@ export default function TransferForm() {
         </CardContent>
 
         <CardFooter>
-          <Button onClick={transfer} disabled={loading}>
+          <Button onClick={transfer} disabled={loading} className="w-full">
             {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
             Enviar
           </Button>

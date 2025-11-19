@@ -3,7 +3,7 @@ import API from "@/components/api/api";
 import Navbar from "@/components/layout/Navbar";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import TransferModal from "@/components/layout/TransferModal";
 
 export default function UserDashboard() {
   const [profile, setProfile] = useState(null);
@@ -11,6 +11,14 @@ export default function UserDashboard() {
   const [cryptos, setCryptos] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [openTransferModal, setOpenTransferModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState("");
+
+  const openTransfer = (username = "") => {
+    setSelectedUser(username);
+    setOpenTransferModal(true);
+  };
 
   useEffect(() => {
     Promise.all([
@@ -41,16 +49,13 @@ export default function UserDashboard() {
 
       <div className="p-8 max-w-6xl mx-auto space-y-8">
 
-        
         <h1 className="text-3xl font-bold">
           Bienvenido, <span className="text-primary">{profile.username}</span>
         </h1>
 
-       
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-          
-          <Card className="col-span-1 md:col-span-1">
+          <Card className="col-span-1">
             <CardHeader>
               <CardTitle>Tu saldo</CardTitle>
             </CardHeader>
@@ -61,26 +66,27 @@ export default function UserDashboard() {
             </CardContent>
           </Card>
 
-         
           <Card className="col-span-1 md:col-span-2">
             <CardHeader>
               <CardTitle>Acciones rápidas</CardTitle>
             </CardHeader>
             <CardContent className="flex gap-4">
-              <Link to="/home#transfer">
-                <Button>Enviar dinero</Button>
-              </Link>
-              <Link to="/home#crypto">
-                <Button>Comprar/Vender Crypto</Button>
-              </Link>
-              <Link to="/home#crypto-list">
-                <Button variant="outline">Ver criptomonedas</Button>
-              </Link>
+              <Button onClick={() => openTransfer()}>Enviar dinero</Button>
+
+              <Button onClick={() => window.location.href = "/home#crypto"}>
+                Comprar/Vender Crypto
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => window.location.href = "/home#crypto-list"}
+              >
+                Ver criptomonedas
+              </Button>
             </CardContent>
           </Card>
         </div>
 
-       
         <Card>
           <CardHeader>
             <CardTitle>Últimas transacciones</CardTitle>
@@ -107,7 +113,6 @@ export default function UserDashboard() {
           </CardContent>
         </Card>
 
-        
         <Card>
           <CardHeader>
             <CardTitle>Usuarios frecuentes</CardTitle>
@@ -116,15 +121,21 @@ export default function UserDashboard() {
             {users.map((u) => (
               <div key={u.username} className="border rounded-lg p-3 flex justify-between">
                 <span>{u.username}</span>
-                <Link to="/home#transfer">
-                  <Button size="sm">Enviar</Button>
-                </Link>
+                <Button size="sm" onClick={() => openTransfer(u.username)}>
+                  Enviar
+                </Button>
               </div>
             ))}
           </CardContent>
         </Card>
 
       </div>
+
+      <TransferModal
+        open={openTransferModal}
+        onClose={setOpenTransferModal}
+        presetUser={selectedUser}
+      />
     </>
   );
 }
