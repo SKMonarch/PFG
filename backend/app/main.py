@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.database.base import Base
 from app.database.session import engine, SessionLocal  
+from app.database.seed import seed
 from app.routes import auth_routes, user_routes, crypto_routes, transaction_routes, mortgage_routes
 from app.routes.crypto_routes import update_crypto_prices
 
@@ -10,15 +11,21 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="AbanckOS")
 
-# Evento de arranque para cargar criptos automáticamente
+# Evento de arranque para cargar criptos y usuarios
 @app.on_event("startup")
 def startup_event():
     db = SessionLocal()
     try:
+        # Cargar criptos
         update_crypto_prices(db)
         print(" Criptomonedas cargadas al iniciar backend")
+
+        # Cargar usuarios del seed
+        seed()
+        print(" Usuarios cargados al iniciar backend")
+
     except Exception as e:
-        print(" Error cargando criptos al iniciar:", e)
+        print(" Error al iniciar backend:", e)
     finally:
         db.close()
 

@@ -10,6 +10,7 @@ export default function UserDashboard() {
   const [txs, setTxs] = useState([]);
   const [cryptos, setCryptos] = useState([]);
   const [users, setUsers] = useState([]);
+  const [userCryptos, setUserCryptos] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [openTransferModal, setOpenTransferModal] = useState(false);
@@ -19,20 +20,21 @@ export default function UserDashboard() {
     setSelectedUser(username);
     setOpenTransferModal(true);
   };
-  API.get("/crypto/wallet").then((res) => setUserCryptos(res.data));
 
   useEffect(() => {
     Promise.all([
       API.get("/users/me"),
       API.get("/transactions/history"),
       API.get("/crypto/prices"),
-      API.get("/users/all")
+      API.get("/users/all"),
+      API.get("/crypto/wallet"),   
     ])
       .then(([userRes, txRes, cryptoRes, usersRes]) => {
         setProfile(userRes.data);
         setTxs(txRes.data.slice(0, 5));
         setCryptos(cryptoRes.data);
         setUsers(usersRes.data.slice(0, 4));
+        setUserCryptos(walletRes.data || []);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -70,11 +72,11 @@ export default function UserDashboard() {
           <Card>
           <CardHeader><CardTitle>Tus criptomonedas</CardTitle></CardHeader>
             <CardContent>
-              {userCryptos.map(c => (
-                <div key={c.symbol}>
-                  {c.symbol.toUpperCase()}: {c.amount} u. (${c.value_usd.toFixed(2)})
-                </div>
-              ))}
+            {userCryptos.map(c => (
+              <div key={c.symbol}>
+                {c.symbol.toUpperCase()}: {c.amount} u. (${c.value_usd.toFixed(2)})
+              </div>
+            ))}
            </CardContent>
           </Card>
 
