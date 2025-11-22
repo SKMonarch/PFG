@@ -18,12 +18,11 @@ export default function Navbar() {
     <nav className="w-full bg-card shadow-sm border-b sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
 
-        {/* LOGO */}
         <Link to="/home" className="text-2xl font-bold text-primary hover:opacity-80">
           Abanck<span className="text-muted-foreground">OS</span>
         </Link>
 
-        {/* MENÚ PRINCIPAL */}
+        
         <div className="flex items-center gap-6 text-sm font-medium">
           <Link to="/home" className="hover:text-primary transition-colors">
             Inicio
@@ -38,7 +37,6 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* PANEL DE USUARIO */}
         {user && (
           <div className="flex items-center gap-4">
             <Separator orientation="vertical" className="h-6" />
