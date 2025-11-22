@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import API from "../api/api";
+import API from "@/components/api/api";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
-} from "../ui/card";
-import { Loader2 } from "lucide-react";
-import { Badge } from "../ui/badge";
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, ArrowUpRight, ArrowDownLeft, Coins } from "lucide-react";
 
 export default function TransactionHistory() {
   const [txs, setTxs] = useState([]);
@@ -19,112 +19,122 @@ export default function TransactionHistory() {
       .finally(() => setLoading(false));
   }, []);
 
-  const formatDate = (ts) =>
-    new Date(ts).toLocaleString("es-ES", {
-      dateStyle: "short",
-      timeStyle: "short",
-    });
+  const formatDateGroup = (dateStr) => {
+    const date = new Date(dateStr);
+    const today = new Date();
+    const yesterday = new Date(Date.now() - 86400000);
 
-  const getLabel = (tx) => {
+    if (date.toDateString() === today.toDateString()) return "Hoy";
+    if (date.toDateString() === yesterday.toDateString()) return "Ayer";
+
+    return date.toLocaleDateString("es-ES", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  const groupByDate = () => {
+    const groups = {};
+    txs.forEach((tx) => {
+      const day = formatDateGroup(tx.timestamp);
+      if (!groups[day]) groups[day] = [];
+      groups[day].push(tx);
+    });
+    return groups;
+  };
+
+  const getIcon = (tx) => {
     if (tx.type === "transfer" && tx.is_received)
-      return "Transferencia recibida";
+      return <ArrowDownLeft className="text-green-500" />;
 
     if (tx.type === "transfer" && !tx.is_received)
-      return "Transferencia enviada";
+      return <ArrowUpRight className="text-red-500" />;
 
-    if (tx.type === "buy")
-      return "Compra de criptomoneda";
+    if (tx.type === "compra_crypto" || tx.type === "venta_crypto")
+      return <Coins className="text-blue-500" />;
 
-    if (tx.type === "sell")
-      return "Venta de criptomoneda";
+    return <Coins />;
+  };
+
+  const getAmountColor = (tx) => {
+    if (tx.type === "transfer" && tx.is_received) return "text-green-600";
+    if (tx.type === "transfer" && !tx.is_received) return "text-red-600";
+    return "text-blue-600";
+  };
+
+  const getLabel = (tx) => {
+    if (tx.type === "transfer" && tx.is_received) return "Transferencia recibida";
+    if (tx.type === "transfer" && !tx.is_received) return "Transferencia enviada";
+
+    if (tx.type === "compra_crypto")
+      return `Compra ${tx.crypto_symbol?.toUpperCase()}`;
+
+    if (tx.type === "venta_crypto")
+      return `Venta ${tx.crypto_symbol?.toUpperCase()}`;
 
     return tx.type;
   };
 
-  const getBadgeStyle = (tx) => {
-    if (tx.type === "transfer" && tx.is_received) return "success";
-    if (tx.type === "transfer" && !tx.is_received) return "warning";
-    if (tx.type === "buy") return "default";
-    if (tx.type === "sell") return "destructive";
-    return "secondary";
-  };
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-40">
+        <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    );
+
+  const grouped = groupByDate();
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">
-            Historial de Actividad
-          </CardTitle>
-        </CardHeader>
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-xl font-bold">Historial</CardTitle>
+      </CardHeader>
 
-        <CardContent>
-          {loading ? (
-            <div className="flex justify-center py-10">
-              <Loader2 className="w-6 h-6 animate-spin" />
-            </div>
-          ) : txs.length === 0 ? (
-            <p className="text-center text-muted-foreground py-6">
-              No tienes movimientos recientes.
-            </p>
-          ) : (
-            <ul className="space-y-4">
-              {txs.map((tx) => (
-                <li
+      <CardContent className="space-y-6">
+        {Object.keys(grouped).map((date) => (
+          <div key={date} className="space-y-3">
+            {/* Group title */}
+            <h3 className="text-sm font-semibold opacity-70">{date}</h3>
+
+            {/* Transactions of this date */}
+            <div className="space-y-2">
+              {grouped[date].map((tx) => (
+                <div
                   key={tx.id}
-                  className="p-4 border rounded-lg flex flex-col gap-2 hover:bg-muted/30 transition-colors"
+                  className="p-3 border rounded-xl flex items-center justify-between hover:bg-muted/50 transition"
                 >
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2 font-semibold">
-                      {tx.type === "buy" && <span>💹</span>}
-                      {tx.type === "sell" && <span>📉</span>}
-                      {tx.type === "transfer" &&
-                        (tx.is_received ? "➕" : "➖")}
-
-                      {getLabel(tx)}
+                  {/* Izquierda: icono + descripción */}
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-muted rounded-full">
+                      {getIcon(tx)}
                     </div>
 
-                    <Badge variant={getBadgeStyle(tx)}>
-                      {getLabel(tx)}
-                    </Badge>
+                    <div className="flex flex-col">
+                      <span className="font-medium">{getLabel(tx)}</span>
+                      <span className="text-xs opacity-70">
+                        {tx.type === "compra_crypto" ||
+                        tx.type === "venta_crypto"
+                          ? `${tx.crypto_amount} ${tx.crypto_symbol?.toUpperCase()}`
+                          : tx.sender && tx.receiver
+                          ? `${tx.sender} → ${tx.receiver}`
+                          : ""}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Detalles */}
-                  <div className="text-sm opacity-80">
-                    {tx.type === "transfer" && (
-                      <>
-                        {tx.is_received ? (
-                          <p>
-                            Recibiste <strong>${tx.amount.toFixed(2)}</strong>{" "}
-                            de <strong>{tx.sender}</strong>
-                          </p>
-                        ) : (
-                          <p>
-                            Enviaste <strong>${tx.amount.toFixed(2)}</strong> a{" "}
-                            <strong>{tx.receiver}</strong>
-                          </p>
-                        )}
-                      </>
-                    )}
-
-                    {(tx.type === "buy" || tx.type === "sell") && (
-                      <p>
-                        {tx.type === "buy" ? "Compraste" : "Vendiste"}{" "}
-                        <strong>
-                          {tx.crypto_amount} {tx.crypto_symbol?.toUpperCase()}
-                        </strong>{" "}
-                        por <strong>${tx.amount.toFixed(2)}</strong>
-                      </p>
-                    )}
+                  {/* Derecha: monto */}
+                  <div className="text-right">
+                    <span className={`font-semibold ${getAmountColor(tx)}`}>
+                      {tx.is_received ? "+" : "-"}${tx.amount.toFixed(2)}
+                    </span>
                   </div>
-
-                  <p className="text-xs opacity-60">{formatDate(tx.timestamp)}</p>
-                </li>
+                </div>
               ))}
-            </ul>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
   );
 }

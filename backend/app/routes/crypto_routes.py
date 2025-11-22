@@ -4,7 +4,7 @@ from app.database.session import get_db
 from app.core.security import get_current_user
 from app.crud.crypto_crud import get_crypto_by_symbol, update_or_create_user_crypto
 from app.crud.transaction_crud import create_transaction
-from app.models.crypto import Crypto
+from app.models.crypto import Crypto, UserCrypto
 from app.services.crypto_service import get_crypto_price
 import requests
 import random   

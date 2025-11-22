@@ -74,7 +74,7 @@ export default function CryptoActions({ presetCrypto = "" }) {
               <SelectContent>
                 {cryptos.map((c) => (
                   <SelectItem key={c.symbol} value={c.symbol}>
-                    {c.name} ({c.symbol.toUpperCase()})
+                    {c.symbol.charAt(0).toUpperCase() + c.symbol.slice(1)} ({c.symbol.toUpperCase()})
                   </SelectItem>
                 ))}
               </SelectContent>
