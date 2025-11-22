@@ -19,6 +19,7 @@ export default function UserDashboard() {
     setSelectedUser(username);
     setOpenTransferModal(true);
   };
+  API.get("/crypto/wallet").then((res) => setUserCryptos(res.data));
 
   useEffect(() => {
     Promise.all([
@@ -35,7 +36,7 @@ export default function UserDashboard() {
       })
       .finally(() => setLoading(false));
   }, []);
-
+  
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen">
@@ -64,6 +65,17 @@ export default function UserDashboard() {
                 ${profile.balance.toFixed(2)}
               </p>
             </CardContent>
+          </Card>
+
+          <Card>
+          <CardHeader><CardTitle>Tus criptomonedas</CardTitle></CardHeader>
+            <CardContent>
+              {userCryptos.map(c => (
+                <div key={c.symbol}>
+                  {c.symbol.toUpperCase()}: {c.amount} u. (${c.value_usd.toFixed(2)})
+                </div>
+              ))}
+           </CardContent>
           </Card>
 
           <Card className="col-span-1 md:col-span-2">

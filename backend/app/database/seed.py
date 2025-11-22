@@ -7,6 +7,8 @@ TEST_USERS = [
     {"username": "test2", "email": "test2@example.com", "password": "1234", "balance": 10000.0},
     {"username": "test3", "email": "test3@example.com", "password": "1234", "balance": 10000.0},
     {"username": "test4", "email": "test4@example.com", "password": "1234", "balance": 10000.0},
+    {"username": "ana", "email": "ana@gmail.com","password": "1234", "balance": 90000.0},
+
 ]
 
 def seed():

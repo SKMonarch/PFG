@@ -109,3 +109,25 @@ def crypto_history(symbol: str):
             })
 
         return fake_points
+
+@router.get("/wallet")
+def wallet(db: Session = Depends(get_db), user=Depends(get_current_user)):
+    from app.models.crypto import UserCrypto, Crypto
+
+    rows = (
+        db.query(UserCrypto, Crypto)
+        .join(Crypto, Crypto.id == UserCrypto.crypto_id)
+        .filter(UserCrypto.user_id == user.id)
+        .all()
+    )
+
+    return [
+        {
+            "symbol": crypto.symbol,
+            "name": crypto.name,
+            "amount": uc.amount,
+            "price_usd": crypto.price_usd,
+            "value_usd": uc.amount * crypto.price_usd
+        }
+        for uc, crypto in rows
+    ]

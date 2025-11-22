@@ -16,8 +16,6 @@ export default function Mortgage() {
   const [amount, setAmount] = useState("");
   const [years, setYears] = useState("");
   const [rate, setRate] = useState("");
-  const [type, setType] = useState("fija");
-
   const [result, setResult] = useState(null);
 
   const calculate = async () => {
@@ -26,7 +24,7 @@ export default function Mortgage() {
         amount: Number(amount),
         years: Number(years),
         interest_rate: Number(rate),
-        type,
+        type: "fija",   // <-- fijo siempre
       };
 
       const res = await API.post("/mortgage/calculate", payload);
@@ -39,15 +37,31 @@ export default function Mortgage() {
   return (
     <>
       <Navbar />
-      <div className="p-8 max-w-3xl mx-auto">
-        <Card>
+
+      <div className="p-8 max-w-4xl mx-auto space-y-10">
+
+        {/* TÍTULO */}
+        <div className="text-center space-y-2">
+          <h1 className="text-4xl font-bold text-primary tracking-tight">
+            Calculadora Hipotecaria
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            Calcula tu cuota mensual fácilmente con una hipoteca fija.
+          </p>
+        </div>
+
+        {/* FORMULARIO */}
+        <Card className="shadow-md rounded-2xl">
           <CardHeader>
-            <CardTitle className="text-2xl">Calculadora Hipotecaria</CardTitle>
+            <CardTitle className="text-xl font-semibold">
+              Datos de la Hipoteca
+            </CardTitle>
           </CardHeader>
 
-          <CardContent className="space-y-4">
-            <div>
-              <Label>Importe (€)</Label>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <div className="space-y-2">
+              <Label>Importe total (€)</Label>
               <Input
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
@@ -56,7 +70,7 @@ export default function Mortgage() {
               />
             </div>
 
-            <div>
+            <div className="space-y-2">
               <Label>Años</Label>
               <Input
                 value={years}
@@ -66,7 +80,7 @@ export default function Mortgage() {
               />
             </div>
 
-            <div>
+            <div className="space-y-2">
               <Label>Interés anual (%)</Label>
               <Input
                 value={rate}
@@ -76,35 +90,37 @@ export default function Mortgage() {
               />
             </div>
 
-            <div>
-              <Label>Tipo</Label>
-              <select
-                className="border p-2 rounded w-full"
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-              >
-                <option value="fija">Fija</option>
-                <option value="variable">Variable</option>
-              </select>
-            </div>
           </CardContent>
 
           <CardFooter>
-            <Button className="w-full" onClick={calculate}>
+            <Button
+              className="w-full text-lg py-3 rounded-xl"
+              onClick={calculate}
+            >
               Calcular
             </Button>
           </CardFooter>
         </Card>
 
+        {/* RESULTADOS */}
         {result && (
-          <Card className="mt-6">
+          <Card className="shadow-lg rounded-2xl border-primary/20">
             <CardHeader>
-              <CardTitle>Resultados</CardTitle>
+              <CardTitle className="text-xl font-semibold text-primary">
+                Resultados de la Hipoteca
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p><strong>Cuota mensual:</strong> €{result.monthly_payment}</p>
-              <p><strong>Total pagado:</strong> €{result.total_paid}</p>
-              <p><strong>Intereses totales:</strong> €{result.total_interest}</p>
+
+            <CardContent className="space-y-4 text-lg">
+              <div className="bg-muted/30 p-4 rounded-lg space-y-1">
+                <p><strong>Cuota mensual:</strong> €{result.monthly_payment}</p>
+                <p><strong>Total pagado:</strong> €{result.total_paid}</p>
+                <p><strong>Intereses totales:</strong> €{result.total_interest}</p>
+              </div>
+
+              <p className="text-sm text-muted-foreground">
+                * Los cálculos son aproximados y pueden variar según la entidad bancaria.
+              </p>
             </CardContent>
           </Card>
         )}

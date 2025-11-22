@@ -25,8 +25,12 @@ def transaction_history(db: Session = Depends(get_db), user=Depends(get_current_
             "description": tx.description,
             "timestamp": tx.timestamp,
             "sender": sender.username if sender else "Sistema",
-            "receiver": receiver.username if receiver else "Sistema"
+            "receiver": receiver.username if receiver else "Sistema",
+            "is_received": (tx.receiver_id == user.id),
+            "crypto_symbol": tx.description.split()[-1] if tx.type in ["compra_crypto","venta_crypto"] else None,
+            "crypto_amount": float(tx.description.split()[2]) if tx.type in ["compra_crypto","venta_crypto"] else None
         })
+
     return result
 
 
