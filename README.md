@@ -131,7 +131,6 @@ npm run dev
 
 ## Personas Contribuyentes
 
-* (Añade aquí otros colaboradores, si los hay: nombre — rol — GitHub)
 
 ---
 
